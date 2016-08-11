@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="ynNotificationApp">
+<head>
+	<meta charset="UTF-8">
+	<title>9-ynNotification</title>
+	<link rel="stylesheet" href="../../../assets/global/plugins/bootstrap/css/bootstrap.css"/>
+	<link rel="stylesheet" href="../../../assets/global/plugins/bootstrap-toastr/toastr.min.css">
+	<link href="../../../assets/global/css/components.css" rel="stylesheet" type="text/css" />
+	<link href="../../../assets/global/css/plugins.css" rel="stylesheet"/>
+	<link href="../../../assets/admin/layout/css/layout.css" rel="stylesheet"/>
+	<link href="../../../ynassets/admin/layout/css/ynstyle.css" rel="stylesheet"/>
+	<link href="../../../ynassets/admin/layout/css/themes/yngreen.css" rel="stylesheet"/>
+</head>
+<body ng-controller="ynNotificationController">
+
+	<div class="container">
+		9-ynNotification
+		<hr>
+		<button type="button" ng-click="confirm()">confirm</button>
+		<button type="button" ng-click="alertSuccess()">alertSuccess</button>
+		<button type="button" ng-click="alertError()">alertError</button>
+		<button type="button" ng-click="notifySchedule()">notifySchedule</button>
+		<button type="button" ng-click="notifySuccess()">notifySuccess</button>
+		<button type="button" ng-click="notifyFail()">notifyFail</button>
+	</div>	
+	
+	<script src="../../../ynassets/admin/lib/jquery/jquery-2.1.1.js"></script>
+	<script src="../../../ynassets/admin/lib/angularjs/angular-1.3.0.js"></script>
+	<script src="../../../ynassets/admin/lib/artDialog/js/dialog-min.js"></script>
+	<script src="../../../assets/global/plugins/bootstrap-toastr/toastr.min.js"></script>
+	<script src="js/context.js"></script>
+	<script src="../4-ynModal/js/ynModal.js"></script>
+	<script src="js/ynNotification.js"></script>
+	<script src="js/app.js"></script>
+</body>
+</html>

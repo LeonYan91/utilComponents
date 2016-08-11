@@ -1,0 +1,87 @@
+
+<div>
+    <link rel="">
+    <style>
+        .pages-photo{width:320px;height: 300px;border: solid 1px #ddd;position: relative;}
+        .pages-photo-button{position:absolute;bottom:0;width:100%;height:50px;background: #e6e6e6;line-height:50px;padding:0 10px 0 10px;}
+        .pages-photo-button a{font-size:14px;}
+        .pages-photo-button i{margin-top:22px;font-size: 18px;margin-right:10px;cursor: pointer;}
+        .scale-long,.scale-circle{position: relative;}
+        .scale-long{width:150px;height:5px;background: #676767;top:28px;left:40px;}
+        .scale-circle{width:20px;height: 20px;background: #8c8c8c;-webkit-border-radius:50% !important;-ms-border-radius:50% !important;-moz-border-radius:50% !important;
+            -webkit-o-radius:50% !important;left:70px;top: 15px;}
+        .pixel-top,.pixel-bottom{border:solid 1px #ddd;overflow: hidden;}
+        .pixel-top,.pixel-top img{width: 50px;height: 50px;max-width: none;}
+        .pixel-bottom,.pixel-bottom img{width: 100px;height: 100px;max-width: none;}
+        .bg-wait{background: #000;width:320px;height: 240px;text-align: center;margin: 10px 0 10px 0;}
+        .bg-wait label{color: #fff;font-size: 16px;margin-top:100px;}
+        .bg-wait-two{line-height:0 !important;}
+        .bg-wait-two label{margin-top: 60px;}
+        .bg-wait-two #wait-btn{margin-top: 20px;}
+        .wait-text{color: #fff;text-align: left;}
+        .wait-text h4{margin:20px 0 20px 10px;}
+        .wait-text p{margin:0 0 20px 10px;}
+    </style>
+
+    <div>
+        <div class="row">
+            <div class="col-md-12" ng-if="!ynHeadportrait.disableEdit">
+                <span ng-show="!duringCam">
+                    <yn-file-uploader uploader-attrs="uploaderAttrs"></yn-file-uploader>
+                </span>
+                <button type="button" class="btn green input-inline" id="picBut" ng-disabled="duringCam" ng-show="duringCam">选择图片</button>
+                <button type="button" class="btn green input-inline" id="startCamId" ng-click="startCam()" ng-disabled="duringCam">拍照</button>
+                <span class="text-danger margin-left-10" ng-show="uploadError">只支持.{{photoString}}格式，请重新选择！</span>
+                <span class="text-danger margin-left-10" ng-if="minSizeError">图片尺寸必须大于{{ynHeadportrait.sizeBound.minSize.w}}X{{ynHeadportrait.sizeBound.minSize.h}}！</span>
+                <span class="">本地图片格式支持.{{photoString}};尺寸建议：大于等于100X100</span>
+            </div>
+            <div class="col-md-12 claerfix">
+                <div class="pull-left margin-right-10">
+                    <div class="pages-photo margin-bottom-10" ng-show="!duringCam">
+                        <div class="pages-photo-heading" ng-show="ynHeadportrait.dataUri">
+                            <img ng-src="{{ynHeadportrait.dataUri}}" id="resultImgId" width="{{camOption.width}}" height="{{camOption.height}}" />
+                        </div>
+                        <!-- 2015-10-27 目前不做缩放与旋转功能 -->
+                        <!--<div class="pages-photo-button clearfix">-->
+                            <!--<a class="pull-left" href="">缩放</a>-->
+                            <!--<i class="fa fa-repeat pull-right"></i>-->
+                            <!--<i class="fa fa-undo pull-right"></i>-->
+                            <!--<div class="scale-long"></div>-->
+                            <!--<div class="scale-circle csp"></div>-->
+
+                        <!--</div>-->
+                        <div class="pages-photo-button clearfix">
+                            <!--<a class="pull-left" href="" ng-click="initCrop()">开始裁剪</a>-->
+                            <a class="text-center" href="" ng-click="restorePicture()">还原</a>
+                        </div>
+                        <div class="bg-wait" ng-show="!ynHeadportrait.dataUri">
+                            <label>请选择本地图片或通过摄像头拍照！</label>
+                            <!--<div class="wait-text">-->
+                            <!--<h4>一直也没有反应？</h4>-->
+                            <!--<p>可能被浏览器弹出的安全提醒阻止，请在页面顶部提醒栏中选择“允许”操作。</p>-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                    <div>
+                        <div yn-webcam="camOption"></div>
+                    </div>
+
+                </div>
+                <div class="pull-left margin-left-10">
+                    <div class="pixel-top">
+                         <img src="{{ynHeadportrait.dataUri}}" ng-show="ynHeadportrait.dataUri" style="">
+                        <img src="../../static/ynassets/admin/layout/img/photo.jpg" ng-show="!ynHeadportrait.dataUri">
+                    </div>
+                    <span class="text-muted">50x50像素</span>
+                    <div class="pixel-bottom margin-top-20">
+                        <img src="{{ynHeadportrait.dataUri}}" ng-show="ynHeadportrait.dataUri" style="">
+                        <img src="../../static/ynassets/admin/layout/img/photo.jpg" ng-show="!ynHeadportrait.dataUri">
+                    </div>
+                    <span  class="text-muted">100x100像素</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
