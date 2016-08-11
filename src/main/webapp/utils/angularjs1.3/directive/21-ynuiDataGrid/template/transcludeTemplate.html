@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-scrollable">
+            <table class="table table-striped table-bordered table-hover table-advance">
+                <thead>
+                <tr>
+                    <th ng-show="gridOptions.useCheckBox">
+                        <input ng-model="gridOptions.allChecked" ng-change="gridOptions.checkAll(gridOptions.allChecked)" type="checkbox" ng-true-value="'all'" ng-false-value="'notall'"/>
+                    </th>
+                    <th>序号</th>
+                    <th ng-repeat="column in gridOptions.columnDefs" ng-show="column.columnSelectFlag === 'yes'" ng-class="{'sorting':gridOptions.currentSortBy != column.field + '_asc' || column.field + '_desc', 'sorting_asc':gridOptions.currentSortBy == column.field + '_asc', 'sorting_desc':gridOptions.currentSortBy == column.field + '_desc'}" ng-click="gridOptions.sortDataList(column,$event)">
+                        {{column.displayName}}
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+                </thead>
+                <!-- 没有相关数据开始 -->
+                <tbody ng-if="gridOptions.viewData.length == 0">
+                <tr>
+                    <td colspan="{{gridOptions.getColLength()}}" class="loading-td">
+                        <div class="loading loading-empty">
+                            <i class="state"></i>没有相关数据!
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <!-- 没有相关数据结束 -->
+                <!-- 加载中开始 -->
+                <!--<tbody ng-if="gridOptions.loading.isLoading">-->
+                <!--<tr>-->
+                <!--<td colspan="{{gridOptions.getColLength()}}" class="text-center" style="height: 80px;">-->
+                <!--<i style="background: url(loading.gif);width: 24px;height: 24px;display: inline-block;vertical-align: middle;margin-right: 10px;"></i>数据加载中....-->
+                <!--</td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+                <!-- 加载中结束 -->
+                <tbody>
+                <tr ng-repeat="rowData in gridOptions.viewData">
+                    <td ng-show="gridOptions.useCheckBox">
+                        <input type="checkbox" ng-model="rowData.selectedFlag" ng-true-value="'yes'" ng-false-value="'no'" ng-change="gridOptions.selectRow(rowData)"/>
+                    </td>
+                    <td>{{$index+1}}</td>
+                    <td ng-repeat="col in gridOptions.columnDefs" ng-show="col.columnSelectFlag === 'yes'"><span ng-bind-html="gridOptions.getColData(col,rowData.item)"></span></td>
+                    <td ng-show="gridOptions.useOperate">
+                        <a ng-repeat="rowAct in gridOptions.rowActions" yn-auth="{{rowAct.auth}}" ng-click="rowAct.action(rowData.item)">
+                            {{rowAct.name(rowData.item)}}
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
