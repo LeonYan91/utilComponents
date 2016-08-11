@@ -1,0 +1,64 @@
+<div class="table-scrollable" ng-if="showFlag">
+    <table class="table table-bordered table-hover" id="{{tableId}}">
+        <thead>
+        <tr>
+            <th style="width: 23px;" ng-if="treeTableOption.useSerialNumber" class="text-center">序号</th>
+            <th class="text-center" ng-repeat="column in treeTableOption.columnDefs">
+                {{column.displayName}}
+            </th>
+            <!--<th ng-show="treeTableOption.useOperate" ng-if="!(treeTableOption.columnDefTops.length > 0)">-->
+            <!--操作-->
+            <!--</th>-->
+        </tr>
+        </thead>
+        <tbody ng-if="treeTableOption.data.length==0">
+        <tr>
+            <td colspan="{{treeTableOption.columnDefs.length + 5}}" class="loading-td" ng-show="!treeTableOption.loadingError && treeTableOption.data.length==0">
+                <div class="loading loading-empty text-center">
+                    <i class="state"></i>没有相关数据!
+                </div>
+            </td>
+            <td colspan="{{treeTableOption.columnDefs.length + 5}}" class="loading-td" ng-show="treeTableOption.loading.loadingError">
+                <div class="loading loading-empty text-center">
+                    <i class="state"></i>{{gridOptions.loading.msg}}
+                </div>
+            </td>
+        </tr>
+        </tbody>
+        <!-- 数据正在加载，或者加载失败开始 -->
+        <!-- 加载中结束 -->
+        <tbody>
+        <tr ng-class="{true:'selected'}[item.id==treeTableOption.selectNode.id]" ng-repeat="item in treeTableOption.viewData" data-tt-id="{{item.id}}" data-tt-parent-id="{{item.pId}}" ng-click="clickNode(item)">
+            <td ng-if="treeTableOption.useSerialNumber" class="text-center">{{item.index}}</td>
+            <td ng-repeat="(index,col) in treeTableOption.columnDefs" ng-class="{'text-left':col.textLeft}">
+                <div ng-if="!col.editFlag || !item.editFlag" ng-click="clickEdit(col,item)" project-auth="{{col.projectAuth}}" auth-type="disabled" project-id="{{treeTableOption.projectId}}">
+                    <div ng-if="!col.template" ng-bind-html="treeTableOption.getColData(col,item,index)"></div>
+                    <div ng-if="col.template" ng-bind-html="col.template | to_trusted" compile-template></div>
+                </div>
+                <div ng-if="col.editFlag && item.editFlag">
+                    <input ng-if="col.editType == 'input' || !col.editType" id="{{item.id+col.field}}" ng-blur="blurEdit(col,item)" type="text" class="form-control" ng-model="item[col.field]" maxlength="{{col.maxlength ? col.maxlength : 100}}">
+                    <input ng-if="col.editType == 'date'" id="{{item.id+col.field}}" readonly  ng-change="blurEdit(col,item)" type="text" name="" class="form-control" ynui-datepicker="day" ng-model="item[col.field]"/>
+                    <select ng-blur="blurEdit(col,item)" ng-if="col.editType == 'select'" name="" id="{{item.id+col.field}}" class="form-control" ng-model="item[col.field]"
+                            ng-options="d.code as d.name for d in col.dict">
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <tr ng-if="treeTableOption.addAuth" project-auth="taskAdd" project-id="{{treeTableOption.projectId}}">
+            <td ng-if="treeTableOption.useSerialNumber"></td>
+            <td ng-repeat="col in treeTableOption.columnDefs" class="text-left">
+                <div ng-if="col.editable && $index==firstEditColIndex" >
+                    <div class="input-group" style="width:400px">
+                        <input id="addNode" maxlength="100" placeholder="请输入任务名称，点击“添加新任务”保存"
+                               type="text" class="form-control" ng-model="newTaskName">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" ng-click="addNewNode(col,newTaskName)">添加新任务</button>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
