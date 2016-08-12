@@ -1,0 +1,51 @@
+<span class="">
+    <div class="field">
+        <div class="form-group">
+            <label class="control-label">财年</label>
+           <div class="input-inline">
+               <input type="text" name="" class="form-control" readonly ynui-datepicker="year" ng-model="conditions.year"/>
+           </div>
+
+        </div>
+    </div>
+
+    <span class="form form-horizontal" ng-if="!disableQuick">
+        <div class="field">
+            <div class="form-group">
+                <label class="control-label"><a ng-class="{'text-muted':selectedType != 1}" ng-click="selectChoiceDate(1)">当月</a></label>
+            </div>
+        </div>
+        <div class="field">
+            <div class="form-group">
+                <label class="control-label"><a ng-class="{'text-muted':selectedType != 2}" ng-click="selectChoiceDate(2)">上个月</a></label>
+            </div>
+        </div>
+        <div class="field">
+            <div class="form-group">
+                <label class="control-label"><a ng-class="{'text-muted':selectedType != 3}" ng-click="selectChoiceDate(3)">最近三个月</a></label>
+
+            </div>
+        </div>
+        <div class="field">
+            <div class="form-group">
+                <label class="control-label"><a ng-class="{'text-muted':selectedType != 4}" ng-click="selectChoiceDate(4)">最近一年</a></label>
+            </div>
+        </div>
+        <div class="field">
+            <div class="form-group">
+                <label class="control-label"><a ng-class="{'text-muted':selectedType != 5}" ng-click="selectChoiceDate(5)">自定义</a></label>
+            </div>
+        </div>
+    </span>
+
+    <div class="field" ng-show="selectedType == 5">
+        <div class="form-group">
+            <label class="control-label">月份</label>
+            <div class="input-group input-medium">
+                <select class="form-control" name="" ng-options="item.yearMonthStr for item in startPayMonthList" ng-model="conditions.startMonth" ng-change="changePayMonth('start')"></select>
+                <div class="input-group-addon">至</div>
+                <select class="form-control" name="" ng-options="item.yearMonthStr for item in endPayMonthList" ng-model="conditions.endMonth"  ng-change="changePayMonth('end')"></select>
+            </div>
+        </div>
+    </div>
+</span>
