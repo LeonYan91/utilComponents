@@ -1,0 +1,335 @@
+<ynui-breadcrumb title="凭证处理" validback></ynui-breadcrumb>
+<!--凭证处理-->
+<div class="pzcl-content">
+<form name="evidenceForm" novalidate="" dynamic>
+<div class="row">
+<div class="col-sm-12 text-center">
+    <h4 class="border-bottom-mg"><strong>记账凭证处理</strong></h4>
+</div>
+<!--凭证编号部分开始-->
+<div class="col-sm-12">
+    <div class="margin-top-5">
+        <div class="title-icon-box icon-bc-blue"></div>
+        <label class="margin-right-30">凭证编号：<span>{{evidence.evidenceNumber}}</span></label>
+        <label class="margin-right-30">制单日期：<span>{{evidence.makeDate}}</span></label>
+        <label>制单人：<span>{{evidence.makeRsglSysUserName}}</span></label>
+    </div>
+</div>
+<div class="col-sm-12">
+    <div class=" margin-top-10">
+        <div class="table-scrollable">
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                <tr>
+                    <th class="serial">序号</th>
+                    <th>摘要</th>
+                    <th>科目名称</th>
+                    <th>借方金额</th>
+                    <th>贷方金额</th>
+                    <th>流水类型</th>
+                    <th>流水金额</th>
+                    <th>收支类型</th>
+                    <th>业务实际金额</th>
+                    <th>分摊类型</th>
+                    <th>分摊规则设置</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in evidence.evidenceDetailDTOList">
+                    <td class="serial" ng-init="item.index=$index+1">{{$index+1}}</td>
+                    <td><div class="word-break-all input-inline" style="width: 300px;">{{item.summary}}</div></td>
+                    <td>{{item.subjectName}}</td>
+                    <td>{{item.borrowAmt | currency:" "}}</td>
+                    <td>{{item.loanAmt | currency:" "}}</td>
+                    <td>
+                        <select name="" id="" class="form-control" ng-model="item.accountType" ng-options="d.code as d.name for d in dict.accountType" ng-change="changeAccountType(item)" ng-disabled="item.flowAuditStatus || item.isOffset">
+
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-small input-inline" ng-model="item.accountAmt" ng-disabled="(''+item.accountType) == '3' || item.flowAuditStatus || item.isOffset" ng-keyup="changeDetailFlowAmt(item)" ng-pattern = "/^(([0-9]{1,12})|([0-9]{1,12}\.[0-9]{1,2}))$/" maxlength="15" yn-validation="{content:'请输入正确的流水金额!',custom:accountAmtCustomVali}"/>
+                    </td>
+                    <td>
+                        <select class="form-control" ng-model="item.feeType" ng-options="d.code as d.name for d in dict.feeType" ng-change="changeFeeType(item)" ng-disabled="item.recordAuditStatus">
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control input-small input-inline" ng-model="item.feeAmt" ng-keyup="changeDetailPracticalAmt(item)" ng-disabled="(''+item.feeType) == '3' || item.recordAuditStatus" ng-pattern = "/^(([0-9]{1,12})|([0-9]{1,12}\.[0-9]{1,2}))$/" maxlength="15" yn-validation="{content:'请输入正确的业务实际金额!',custom:feeAmtCustomVali}"/>
+                    </td>
+                    <td>
+                        <select name="" id="" class="form-control" ng-model="item.apportionType" ng-options="d.code as d.name for d in dict.apportionType" ng-change="changeApportionType(item)" ng-disabled="(''+item.feeType) == '3' || item.lockStatus">
+
+                        </select>
+                    </td>
+                    <td style="max-width: 600px">
+                        <div class="checkbox-list">
+                            <label class="checkbox-inline" ng-repeat="a in item.apportionTypeArr">
+                                <input type="checkbox" id="" name="" ng-model="a.value" ng-true-value="{{a.type}}" ng-false-value="''" ng-click="changeAppRule(a,item)" ng-disabled="(''+item.feeType) == '3' || item.apportionType == 2 || item.lockStatus"/>{{a.name}}
+                            </label>
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按个人-->
+                            <!--</label>-->
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按阿米巴-->
+                            <!--</label>-->
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按项目-->
+                            <!--</label>-->
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按产品-->
+                            <!--</label>-->
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按市场区域-->
+                            <!--</label>-->
+                            <!--<label class="checkbox-inline">-->
+                            <!--<input type="checkbox" id="" name=""/>按分销商-->
+                            <!--</label>-->
+                        </div>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--凭证编号部分结束-->
+<!--资金流水处理开始-->
+<div class="col-sm-12">
+    <div class="margin-top-5">
+        <div class="title-icon-box icon-bc-yellow"></div>
+        <label>资金流水处理</label>
+    </div>
+</div>
+<div class="col-sm-12" ng-if="hasFundFlow()">
+    <div class=" margin-top-10">
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+            <tr>
+                <th class="serial">序号</th>
+                <th>流水号</th>
+                <th>流水类型</th>
+                <th>流水金额</th>
+                <th>经办人</th>
+                <th>经办日期</th>
+                <th>资金账户</th>
+                <th>摘要</th>
+                <th>关联业务系统</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody ng-repeat="detail in evidence.evidenceDetailDTOList">
+            <tr ng-repeat="flow in detail.fundFlowDTOList">
+                <td class="serial">{{flow.index}}</td>
+                <td>{{flow.flowNumber}}</td>
+                <td>{{flow.flowTypeName}}</td>
+                <td>
+                    <span ng-if="detail.fundFlowDTOList.length == 1">{{flow.flowAmt}}</span>
+                    <span ng-if="detail.fundFlowDTOList.length > 1">
+                        <input type="text" class="form-control input-small input-inline" ng-model="flow.flowAmt" ng-change="changeFlowAmt(detail,flow)" ng-pattern = "/^(([0-9]{1,12})|([0-9]{1,12}\.[0-9]{1,2}))$/" maxlength="15" required yn-validation="{content:'请输入正确的流水金额!'}" ng-disabled="flow.auditStatus || flow.isOffset"/>
+                    </span>
+                </td>
+                <td>
+                    <input type="text" class="form-control input-small input-inline" ng-model="flow.handleSysUserName" yn-validation="{isClick:true}" required readonly/>
+                    <button class="btn btn-select" type="button" ng-click="selectUser(flow,'handleSysUserName','handleSysUserId')" ng-disabled="flow.auditStatus || flow.isOffset">选择</button>
+                </td>
+                <td>
+                    <div class="input-icon right input-medium input-inline" ng-if="!flow.auditStatus && !flow.isOffset">
+                        <!--<i class="fa fa-times"></i>-->
+                        <!--<input type="text" class="form-control"/>-->
+                        <input class="form-control input-medium" type="text" ng-model="flow.handleTime" readonly  yn-date date-format="yyyy-mm-dd" date-plugin="date" yn-validation="{isClick:true}" required ng-disabled="detail.flowAuditStatus"/>
+                    </div>
+                    <div ng-if="flow.auditStatus || flow.isOffset">{{flow.handleTime}}</div>
+                </td>
+                <td>
+                    <input type="text" class="form-control input-small input-inline" ng-model="flow.fundName" yn-validation="{isClick:true}" required readonly/>
+                    <button class="btn btn-select" type="button" ng-click="selectFundAccount(flow)" ng-disabled="flow.auditStatus || flow.isOffset">选择</button>
+                </td>
+                <td>
+                    <input type="text" class="form-control" ng-model="flow.summary" maxlength="300" ng-disabled="flow.auditStatus || flow.isOffset"/>
+                </td>
+                <td>
+                    <span ng-if="!flow.auditStatus && !flow.isOffset">
+                        <yn-select theme="multiChoiceSearch" option='{repeat:dict.systemList,property:"name",key:"code",disableSearch:true,placeholder:"无"}' model="flow.referSystemCodesList"></yn-select>
+                    </span>
+                    <span ng-if="flow.auditStatus || flow.isOffset">
+                        {{getReferSystemNames(flow.referSystemCodes)}}
+                    </span>
+                </td>
+                <td>
+                    <a  href="" class="tab-color-322A75" ng-click="splitFlow(detail,flow)" ng-if="$index == 0 && !flow.auditStatus && !flow.isOffset" ng-disabled="flow.auditStatus || flow.isOffset">拆分</a>
+                    <a  href="" class="tab-color-322A75" ng-click="deleteSplitFlow(detail,$index)" ng-if="$index > 0 && !flow.auditStatus && !flow.isOffset" ng-disabled="flow.auditStatus || flow.isOffset">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--资金流水处理结束-->
+<!--收支记录处理开始-->
+<div class="col-sm-12">
+    <div class="margin-top-5">
+        <div class="title-icon-box icon-bc-green"></div>
+        <label>收支记录处理</label>
+    </div>
+</div>
+<span ng-repeat="detail in evidence.evidenceDetailDTOList">
+    <div class="col-sm-12" ng-repeat="record in detail.fundRecordDTOList">
+        <div class="panel-container" >
+            <div class=" margin-top-10 input-inline">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="serial">序号</th>
+                        <th>收支单号</th>
+                        <th>收支类型</th>
+                        <th>收支类别</th>
+                        <th>收支性质</th>
+                        <th>金额</th>
+                        <th>经办人</th>
+                        <th>经办日期</th>
+                        <th>摘要</th>
+                        <th>关联业务系统</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="serial">{{record.index}}</td>
+                        <td>{{record.fundNumber}}</td>
+                        <td>{{getDictByCode(dict.feeType,record.fundType).name}}</td>
+                        <td>
+                            <select name="" id="" class="form-control" ng-model="record.subFundAttributeId" ng-change="cascadeFundAttribute(record.fundType,2,record.subFundAttributeId,record.dict,'jyhsFundAttributeId',record)" ng-options="d.code as d.name for d in record.dict.attributeType" yn-validation required ng-disabled="record.auditStatus">
+                            </select>
+                        </td>
+                        <td>
+                            <select name="" id="" class="form-control" ng-model="record.jyhsFundAttributeId" ng-options="d.code as d.name for d in record.dict.jyhsFundAttributeId" yn-validation required ng-disabled="record.auditStatus">
+                            </select>
+                        </td>
+                        <td>
+                            <span ng-if="detail.fundRecordDTOList.length == 1">
+                                {{record.fundAmt}}
+                            </span>
+                            <span ng-if="detail.fundRecordDTOList.length > 1">
+                                <input type="text" class="form-control input-small input-inline" ng-model="record.fundAmt" ng-keyup="changeRecordFundAmt(record)" ng-pattern = "/^(([0-9]{1,12})|([0-9]{1,12}\.[0-9]{1,2}))$/" maxlength="15" required yn-validation="{content:'请输入正确的金额!'}" ng-disabled="record.auditStatus"/>
+                            </span>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control input-small input-inline" readonly ng-model="record.managers" yn-validation="{isClick:true}" required/>
+                            <button class="btn btn-select" type="button" ng-click="selectUser(record,'managers','managersId')" ng-disabled="record.auditStatus">选择</button>
+                        </td>
+                        <td>
+                            <div class="input-icon right input-medium input-inline" ng-if="!record.auditStatus">
+                                <input type="text" class="form-control input-medium" ng-model="record.managersDate" readonly yn-date date-format="yyyy-mm-dd" date-plugin="date" yn-validation="{isClick:true}" required/>
+                            </div>
+                            <div ng-if="record.auditStatus">
+                                {{record.managersDate}}
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" placeholder="" ng-model="record.summary" maxlength="300" ng-disabled="record.auditStatus"/>
+                        </td>
+                        <td>
+                            <span ng-if="!record.auditStatus">
+                                <yn-select theme="multiChoiceSearch" option='{repeat:dict.systemList,property:"name",key:"code",disableSearch:true,placeholder:"无"}' model="record.referSystemCodesList"></yn-select>
+                            </span>
+                            <span ng-if="record.auditStatus">
+                                {{getReferSystemNames(record.referSystemCodes)}}
+                                <!--{{record.referSystemNames}}-->
+                            </span>
+                        </td>
+                        <td>
+                            <span ng-if="$index == 0 && !record.auditStatus">
+                                <a href="" class="tab-color-322A75" ng-click="splitRecord(detail)">拆分</a>
+                            </span>
+                            <span ng-if="$index > 0 && !record.auditStatus">
+                                <a href="" class="tab-color-322A75" ng-click="deleteRecord($index,detail)">删除</a>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="text-left">
+                            <label class="pull-right margin-right-20">
+                                <a class="tab-color-322A75" ng-click="toggleApportion(record)" ng-init="record.isExpandApp = true">{{record.isExpandApp ? "收起" : "展开"}}分摊信息</a>
+                            </label>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <!--展开内容区域开始-->
+                    <tbody class="panel-con-body" ng-show="record.isExpandApp">
+                    <tr ng-repeat="apportion in record.apportionDTOList track by $index">
+                        <td colspan="11" class="text-left">
+                            <div class="con-body-title">
+                                <div class="con-body-title clearfix">
+                                    <div class="pull-left">
+                                        <label class="margin-right-30"><strong class="margin-right-10">分摊{{apportion.entityTypeName}}</strong><i class="fa fa-chevron-right"></i></label>
+                                        <label class="margin-right-30">总金额：<span>{{apportion.totalAmt | currency:" "}}</span></label>
+                                        <label class="margin-right-30">已分摊：<span>{{apportion.apportedAmt | currency:" "}}</span></label>
+                                        <label>未分摊：<span class="text-danger">{{apportion.unApportedAmt | currency:" "}}</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="con-body-content">
+                                <button class="btn add-org-inst" type="button" ng-click="addAppSub(apportion)" ng-disabled="record.lockStatus"><i class="fa fa-plus margin-right-10"></i>添加{{apportion.entityTypeName}}</button>
+                                <div class=" margin-top-10">
+                                    <table class="table table-striped table-hover table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th class="serial">序号</th>
+                                            <th ng-repeat="c in apportion.titles track by $index">
+                                                {{c}}
+                                            </th>
+                                            <th ng-if="apportion.entityType == 3 && record.fundType == 1">费用类型</th>
+                                            <th>金额</th>
+                                            <th>占比</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="appSub in apportion.apportionSubDTOList track by $index">
+                                            <td class="serial">{{$index+1}}</td>
+                                            <td ng-repeat="v in appSub.titleVal track by $index">
+                                                {{v}}
+                                            </td>
+
+                                            <td ng-if="apportion.entityType == 3 && record.fundType == 1">
+                                                <select name="" id="" class="form-control" ng-model="appSub.feeType" ng-options="d.code as d.name for d in dict.amoebaFeeType" ng-disabled="record.lockStatus">
+                                                </select>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" class="form-control input-small input-inline" ng-model="appSub.apportionAmt" ng-keyup="calculateAmt('apportionAmt',appSub,apportion)"  ng-pattern = "/^(([0-9]{1,12})|([0-9]{1,12}\.[0-9]{1,2}))$/" maxlength="15" required yn-validation="{content:'请输入正确的金额!',isClick:true}" ng-disabled="record.lockStatus"/>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" class="form-control input-small input-inline" ng-model="appSub.apportionPercentage" ng-keyup="calculateAmt('apportionPercentage',appSub,apportion)"  ng-pattern = "/^(([0-9]{1,2})|([0-9]{1,2}\.[0-9])|100|100.0)$/" maxlength="10" required yn-validation="{content:'请输入正确的占比!',isClick:true}" ng-disabled="record.lockStatus"/>
+                                                <span>%</span>
+                                            </td>
+                                            <td>
+                                                <a ng-if="!(!detail.lockStatus && apportion.apportionSubDTOList.length>1)" class="text-muted">删除</a>
+                                                <a ng-if="!detail.lockStatus && apportion.apportionSubDTOList.length>1" href="" class="tab-color-322A75" ng-click="deleteAppSub($index,apportion)">删除</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                    <!--展开内容区域结束-->
+                </table>
+            </div>
+        </div>
+    </div>
+</span>
+
+<!--收支记录处理结束-->
+<div class="col-sm-12 text-center">
+    <button class="btn btn-primary" type="button" ng-click="submit()" subButt>处理完成</button>
+    <button class="btn btn-white" type="button" ng-click="cancel()">取消</button>
+</div>
+</div>
+</form>
+</div>
