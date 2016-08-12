@@ -1,0 +1,112 @@
+<ynui-breadcrumb title="{{!urlParams.id ? '数据表新建' : '数据表编辑'}}" validback></ynui-breadcrumb>
+<form name="tableObjForm" novalidate="" dynamic>
+    <div class="panel-body margin-top-10">
+
+        <div class="fix form-horizontal">
+            <div class="row">
+                <div class="col-fix-17">
+                    <div class="row">
+                        <div class="col-fix-8">
+                            <div class="form-group">
+                                <label class="control-label col-fix-3">数据表名称
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-fix-5">
+                                    <input type="text" name="" class="form-control"  yn-validation ng-model="tableObj.name" required maxlength="30"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-fix-8" >
+                            <div class="form-group">
+                                <label class="control-label col-fix-3">数据表类型
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-fix-5">
+                                    <select class="form-control" ng-model="tableObj.category" yn-validation ng-options="d.name for d in dict.category">
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-fix-8">
+                            <div class="form-group">
+                                <label class="control-label col-fix-3">所属组织机构
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-fix-5">
+                                    <ynui-tree-select option="ynuiTreeSelectConfig" name="" model="tableObj.organizations" required="true" type="org" /></ynui-tree-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="left-title-style"><i class="icon-blue fa fa-circle"></i>请勾选您所需要的数据列,点击<a>设置</a>输入列名称和设置规则</div>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="check">
+            <!--<input type="checkbox"/>-->
+        </th>
+        <th class="serial">
+            序号
+        </th>
+        <th>
+            列类型
+        </th>
+        <th>
+            列名称
+        </th>
+        <th>
+            必填
+        </th>
+        <th>
+            规则描述
+        </th>
+        <th>
+            操作
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="field in allFields track by $index" ng-class="{'active':field.checked}">
+        <td>
+            <input type="checkbox" ng-model="field.checked" ng-true-value="true" ng-false-value="false" ng-checked="field.checked" ng-click="generSelectedIndex()" ng-disabled="field.typeStr == '登记时间'"/>
+        </td>
+        <td>
+            {{field.selectedIndex}}
+        </td>
+        <td>
+            {{field.typeStr}}
+        </td>
+        <td>
+            <span ng-show="field.checked">{{field.name}}</span>
+        </td>
+        <td>
+            <span ng-show="field.checked">
+                {{field.rule.required ? '是' : '否'}}
+            </span>
+        </td>
+        <td>
+            <span ng-show="field.checked" ng-class="{'text-danger':field.getRule && !field.rule.content}">
+                {{field.rule.description}}
+            </span>
+        </td>
+        <td class="operation">
+            <a ng-class="{'text-muted' : !field.checked || !field.modalTpl}" ng-click="editRule(field)">
+                设置
+            </a>
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+
+<div class="text-center margin-top-10" >
+    <button class="btn btn-white" type="button" ng-click="submit()" subButt>保存</button>
+    <button class="btn btn-primary" type="button" ng-click="submit('set')" subButt>保存并设置</button>
+    <button class="btn btn-white" type="button" ng-click="cancel()">取消</button>
+</div>
+</form>
